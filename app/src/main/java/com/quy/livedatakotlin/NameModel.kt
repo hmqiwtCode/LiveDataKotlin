@@ -8,14 +8,5 @@ class NameModel: ViewModel() {
         MutableLiveData<String>()
 
     }
-    fun setCurrentName(){
-        currentName.value = "OK nhu vay di"
-    }
-
-
-    fun setPar(){
-        currentName.value = "Change thu cho vui"
-    }
-
 
 }
