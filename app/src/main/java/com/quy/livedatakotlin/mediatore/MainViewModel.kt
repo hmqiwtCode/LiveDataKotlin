@@ -17,12 +17,20 @@ class MainViewModel: ViewModel(){
     //region
     val currentScore = MediatorLiveData<Float>()
 
+    val currentScore1: LiveData<Pair<Float,Float>> = combine(_firstPlayerScore,_secondPlayerScore)
+
     init{
         currentScore.addSource(_firstPlayerScore) { value ->
-            currentScore.setValue(value)
+            if (_secondPlayerScore.value == 10f){
+                currentScore.setValue(value)
+            }
+
         }
         currentScore.addSource(_secondPlayerScore) { value ->
-            currentScore.setValue(value)
+            if (_firstPlayerScore.value == 10f){
+                currentScore.setValue(value)
+            }
+
         }
     }
     //endregion
@@ -33,5 +41,23 @@ class MainViewModel: ViewModel(){
 
     fun setSecondPlayerScore(score: Float){
         _secondPlayerScore.value = score
+    }
+
+
+    fun <A, B> combine(a: LiveData<A>, b: LiveData<B>): LiveData<Pair<A, B>> {
+        return MediatorLiveData<Pair<A, B>>().apply {
+            fun combine() {
+                val aValue = a.value
+                val bValue = b.value
+                if (aValue != null && bValue != null) {
+                    postValue(Pair(aValue, bValue))
+                }
+            }
+
+            addSource(a) { combine() }
+            addSource(b) { combine() }
+
+            combine()
+        }
     }
 }
